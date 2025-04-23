@@ -1,8 +1,11 @@
 
 using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Persistence;
 using Persistence.Data;
+using Services;
+using Services.Abstractions;
 
 namespace E_Commerce_API
 {
@@ -25,7 +28,9 @@ namespace E_Commerce_API
             }
             );
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();//Allow DI for DbIntilizer
-
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddAutoMapper(typeof(AssemblyReference).Assembly);
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
             var app = builder.Build();
             #region Seeding
 
