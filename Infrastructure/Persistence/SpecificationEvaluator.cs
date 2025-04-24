@@ -19,9 +19,9 @@ namespace Persistence
             if(specifications.Criteria is not null)
             {
                 query = query.Where(specifications.Criteria);
-                query = specifications.IncludeExpressions.Aggregate(query, (currentQuery, IncludeExpression) => currentQuery.Include(IncludeExpression));
+            
             }
-
+            query = specifications.IncludeExpressions.Aggregate(query, (currentQuery, IncludeExpression) => currentQuery.Include(IncludeExpression));
 
             return query;
         }
