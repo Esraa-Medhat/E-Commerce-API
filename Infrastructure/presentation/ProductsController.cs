@@ -14,9 +14,9 @@ namespace presentation
     {
         //endpoint: public non-static method
         [HttpGet] //Get  /api/Products
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts(int? brandId,int? typeId)
         {
-          var result=  await serviceManager.ProductService.GetAllProductsAsync();
+          var result=  await serviceManager.ProductService.GetAllProductsAsync(brandId,typeId);
             if (result is null) return BadRequest(); //400
             return Ok(result); //200
 
