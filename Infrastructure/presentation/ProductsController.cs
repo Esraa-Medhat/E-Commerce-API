@@ -13,10 +13,18 @@ namespace presentation
     public class ProductsController(IServiceManager serviceManager) :ControllerBase
     {
         //endpoint: public non-static method
+
+        //sort
+        //based on 1-name asc [default]
+        //2- name desc
+        //3- price asc
+        //4- price desc
+
+
         [HttpGet] //Get  /api/Products
-        public async Task<IActionResult> GetAllProducts(int? brandId,int? typeId)
+        public async Task<IActionResult> GetAllProducts(int? brandId,int? typeId,string? sort)
         {
-          var result=  await serviceManager.ProductService.GetAllProductsAsync(brandId,typeId);
+          var result=  await serviceManager.ProductService.GetAllProductsAsync(brandId,typeId,sort);
             if (result is null) return BadRequest(); //400
             return Ok(result); //200
 

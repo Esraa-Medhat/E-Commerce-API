@@ -16,9 +16,9 @@ namespace Services
     {
        
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int? brandId, int? typeId)
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int? brandId, int? typeId,string? sort)
         {
-            var spec = new ProductWithBrandsAndTypesSpecifications(brandId,typeId);
+            var spec = new ProductWithBrandsAndTypesSpecifications(brandId,typeId,sort);
             //Get All Products through ProductRepository
             var products=await unitOfWork.GetRepository<Product, int >().GetAllAsync(spec);
 
