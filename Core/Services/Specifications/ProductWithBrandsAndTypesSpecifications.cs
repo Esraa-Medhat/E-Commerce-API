@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Shared;
 
 namespace Services.Specifications
 {
@@ -14,16 +15,21 @@ namespace Services.Specifications
         {
             ApplyIncludes();
         }
-        public ProductWithBrandsAndTypesSpecifications(int? brandId, int? typeId,string? sort,int pageIndex,int pageSize) : base(
-            P=>(!brandId.HasValue || P.BrandId == brandId)&&
-            (!typeId.HasValue || P.TypeId == typeId)
+        public ProductWithBrandsAndTypesSpecifications(ProductSpecificationsParameters specParams, bool enablePaging = true) : base(
+            P=>(!specParams.BrandId.HasValue || P.BrandId == specParams.BrandId) &&
+            (!specParams.TypeId.HasValue || P.TypeId == specParams.TypeId)
 
             )
         {
 
             ApplyIncludes();
-            ApplySorting(sort);
-            ApplyPagination(pageIndex, pageSize);
+            ApplySorting(specParams.Sort);
+            if (enablePaging) {
+
+                ApplyPagination(specParams.PageIndex, specParams.PageSize);
+            }
+               
+           
           
         }
      
@@ -40,6 +46,9 @@ namespace Services.Specifications
             {
                 switch (sort.ToLower())
                 {
+                    case "nameasc":
+                        AddOrderBy(P => P.Name);
+                        break;
 
                     case "namedesc":
                         AddOrderByDescending(P => P.Name);
@@ -58,7 +67,7 @@ namespace Services.Specifications
             }
             else
             {
-                AddOrderBy(P => P.Name);
+                AddOrderBy(P => P.Id);
             }
 
         }
