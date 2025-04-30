@@ -12,7 +12,8 @@ namespace Services.Specifications
     {
         public ProductWithCountSpecification(ProductSpecificationsParameters specParams) :base(
 
-                 P => (!specParams.BrandId.HasValue || P.BrandId == specParams.BrandId) &&
+                 P => (string.IsNullOrEmpty(specParams.Search) || P.Name.ToLower().Contains(specParams.Search.ToLower())) &&
+                 (!specParams.BrandId.HasValue || P.BrandId == specParams.BrandId) &&
             (!specParams.TypeId.HasValue || P.TypeId == specParams.TypeId)
 
             )
