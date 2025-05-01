@@ -1,5 +1,6 @@
 
 using Domain.Contracts;
+using E_Commerce_API.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Persistence;
@@ -36,9 +37,9 @@ namespace E_Commerce_API
 
             using var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();//Ask CLR  Create Object From DbInitializer
-            await dbInitializer.InitializeAsync(); 
+            await dbInitializer.InitializeAsync();
             #endregion
-
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
