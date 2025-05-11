@@ -18,6 +18,16 @@ namespace E_Commerce_API.Middlewares
             try
             {
                 await _next.Invoke(context);
+                if (context.Response.StatusCode == StatusCodes.Status404NotFound)
+                {
+                    context.Response.ContentType = "application/json";
+                    var response = new ErrorDetails()
+                    {
+                        statusCode=StatusCodes.Status404NotFound,
+                        ErrorMessage=$"End Point {context.Request.Path} is Not Found"
+                    };
+                    await context.Response.WriteAsJsonAsync(response);
+                }
             }
             catch (Exception ex)
             {
