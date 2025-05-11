@@ -1,4 +1,5 @@
-﻿using Shared.ErrorsModels;
+﻿using Domain.Exceptions;
+using Shared.ErrorsModels;
 
 namespace E_Commerce_API.Middlewares
 {
@@ -26,13 +27,21 @@ namespace E_Commerce_API.Middlewares
                 //2-Set Content Type Code For Response
                 //3-Response Object (Body)
                 //4-Return Response
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/json";
                 var response = new ErrorDetails()
                 {
-                    statusCode = StatusCodes.Status500InternalServerError,
+                   
                     ErrorMessage = ex.Message
                 };
+                response.statusCode = ex switch
+                {
+                    NotFoundException=>StatusCodes.Status404NotFound,
+                    _=> StatusCodes.Status500InternalServerError
+                };
+
+                context.Response.StatusCode = response.statusCode;
+
                await context.Response.WriteAsJsonAsync(response);
             }
         }

@@ -32,7 +32,14 @@ namespace E_Commerce_API
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(AssemblyReference).Assembly);
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
+
+         
+
+           
+
             var app = builder.Build();
+            
+
             #region Seeding
 
             using var scope = app.Services.CreateScope();
