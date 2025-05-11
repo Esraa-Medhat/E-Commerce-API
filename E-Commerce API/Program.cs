@@ -1,12 +1,14 @@
 
 using Domain.Contracts;
 using E_Commerce_API.Middlewares;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Persistence;
 using Persistence.Data;
 using Services;
 using Services.Abstractions;
+using Shared.ErrorsModels;
 
 namespace E_Commerce_API
 {
@@ -33,7 +35,22 @@ namespace E_Commerce_API
             builder.Services.AddAutoMapper(typeof(AssemblyReference).Assembly);
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
-         
+            builder.Services.Configure<ApiBehaviorOptions>(config => { 
+            config.InvalidModelStateResponseFactory = (actionContext) =>
+            {
+               var errors= actionContext.ModelState.Where(m => m.Value.Errors.Any())
+                .Select(m => new ValidationError()
+                {
+                    Field = m.Key,
+                    Errors = m.Value.Errors.Select(errors=>errors.ErrorMessage)
+                });
+                var response = new ValidationErrorResponse()
+                {
+                    Errors = errors
+                };
+                return new BadRequestObjectResult(response);
+
+            }; });
 
            
 
