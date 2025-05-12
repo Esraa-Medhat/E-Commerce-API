@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities;
+using Domain.Exceptions;
 using Services.Abstractions;
 using Services.Specifications;
 using Shared;
@@ -16,15 +17,17 @@ namespace Services
     {
        
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int? brandId, int? typeId,string? sort)
+        public async Task<PaginationResponse<ProductDto>> GetAllProductsAsync(ProductSpecificationsParameters specParams)
         {
-            var spec = new ProductWithBrandsAndTypesSpecifications(brandId,typeId,sort);
+            bool enablePaging = specParams.PageSize > 0;
+            var spec = new ProductWithBrandsAndTypesSpecifications(specParams, enablePaging);
             //Get All Products through ProductRepository
             var products=await unitOfWork.GetRepository<Product, int >().GetAllAsync(spec);
-
+            var specCount = new ProductWithCountSpecification(specParams);
+            var count = await unitOfWork.GetRepository<Product, int>().CountAsync(specCount);
             //Mapping IEnumerable<Product> to IEnumerable<ProductDto>
            var result= mapper.Map<IEnumerable<ProductDto>>(products);
-            return result;
+            return new PaginationResponse<ProductDto>(specParams.PageIndex,specParams.PageSize,count, result);
 
         }
 
@@ -35,7 +38,7 @@ namespace Services
 
             var spec = new ProductWithBrandsAndTypesSpecifications(id);
             var product = await unitOfWork.GetRepository<Product, int>().GetAsync(spec);
-            if (product is null) return null;
+            if (product is null) throw new ProductNotFoundExceptions(id);
             var result = mapper.Map<ProductDto>(product);
             return result;
             

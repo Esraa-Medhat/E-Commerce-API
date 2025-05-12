@@ -29,6 +29,9 @@ namespace Persistence
             {
                 query = query.OrderByDescending(specifications.OrderByDescending);
             }
+            if (specifications.IsPagination)
+                query = query.Skip(specifications.Skip).Take(specifications.Take);
+
             query = specifications.IncludeExpressions.Aggregate(query, (currentQuery, IncludeExpression) => currentQuery.Include(IncludeExpression));
 
             return query;
