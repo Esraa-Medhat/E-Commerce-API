@@ -46,6 +46,7 @@ namespace E_Commerce_API.Middlewares
                 response.statusCode = ex switch
                 {
                     NotFoundException => StatusCodes.Status404NotFound,
+                    BadRequestException => StatusCodes.Status400BadRequest,
                     _ => StatusCodes.Status500InternalServerError
                 };
 
