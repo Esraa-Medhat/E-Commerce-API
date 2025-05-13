@@ -27,6 +27,7 @@ namespace Persistence
            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddAutoMapper(typeof(AssemblyReference).Assembly);
             services.AddScoped<IBasketRepository,BasketRepository>();
+            services.AddScoped<ICacheRepository,CacheRepository>();
             services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
             {
                 return ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis")!);
