@@ -8,7 +8,7 @@ namespace Shared
 {
     public class BasketDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public IEnumerable<BasketItemDto> Items { get; set; }
     }
 }
