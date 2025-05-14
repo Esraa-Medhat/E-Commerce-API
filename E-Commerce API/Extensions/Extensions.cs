@@ -1,8 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
 using Domain.Contracts;
+using Domain.Entities.Identity;
 using E_Commerce_API.Middlewares;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
+using Persistence.Identity;
 using Services;
 using Shared.ErrorsModels;
 
@@ -13,6 +16,7 @@ namespace E_Commerce_API.Extensions
         public static IServiceCollection RegisterAllServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddBuiltInServices();
+            services.AddIdentityServices();
             services.AddSwaggerServices();
             services.ConfigureServices();
 
@@ -28,6 +32,14 @@ namespace E_Commerce_API.Extensions
         {
 
             services.AddControllers();
+
+            return services;
+        }
+        private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+
+            services.AddIdentity<AppUser,IdentityRole>()
+                .AddEntityFrameworkStores<AppIdentityDbContext>();
 
             return services;
         }
@@ -88,6 +100,7 @@ namespace E_Commerce_API.Extensions
             using var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();//Ask CLR  Create Object From DbInitializer
             await dbInitializer.InitializeAsync();
+            await dbInitializer.InitializeIdentityAsync();
             return app;
         }
         private static  WebApplication UseGlobalErrorHandling(this WebApplication app)
