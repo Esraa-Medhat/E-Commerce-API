@@ -9,6 +9,10 @@ using Persistence.Identity;
 using Services;
 using Shared;
 using Shared.ErrorsModels;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace E_Commerce_API.Extensions
 {
@@ -26,6 +30,9 @@ namespace E_Commerce_API.Extensions
 
             services.AddInfrastructureServices(configuration);
             services.AddApplicationServices(configuration);
+
+            services.configureJwtServices(configuration);
+
           
             return services;
         }
@@ -34,6 +41,35 @@ namespace E_Commerce_API.Extensions
         {
 
             services.AddControllers();
+
+            return services;
+        }
+        private static IServiceCollection configureJwtServices(this IServiceCollection services,IConfiguration configuration)
+        {
+
+            var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+
+            services.AddAuthentication(options =>
+
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
+
+                };
+            });
 
             return services;
         }
@@ -88,7 +124,7 @@ namespace E_Commerce_API.Extensions
             }
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
