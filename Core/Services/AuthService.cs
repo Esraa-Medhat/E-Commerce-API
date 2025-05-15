@@ -12,10 +12,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Services
 {
-    public class AuthService(UserManager<AppUser> userManager,IConfiguration configuration) : IAuthService
+    public class AuthService(UserManager<AppUser> userManager,IOptions<JwtOptions> options) : IAuthService
     {
         public async Task<UserResultDto> LoginAsync(LoginDto loginDto)
         {
@@ -57,6 +58,8 @@ namespace Services
         }
         private async Task<string> GenerateJwtTokenAsync(AppUser user)
         {
+
+            var jwtOptions = options.Value;
             var authClaim = new List<Claim>()
             {
                new Claim (ClaimTypes.Name,user.UserName),
@@ -69,12 +72,12 @@ namespace Services
                 authClaim.Add(new Claim(ClaimTypes.Role, role));
 
             }
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:SecretKey"]));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey));
             var token = new JwtSecurityToken(
-               issuer: configuration["JwtOptions:Issuer"],
-               audience: configuration["JwtOptions:Audience"],
+               issuer: jwtOptions.Issuer,
+               audience: jwtOptions.Audience,
                claims:authClaim,
-               expires:DateTime.UtcNow.AddDays(double.Parse(configuration["JwtOptions:DurationInDays"])),
+               expires:DateTime.UtcNow.AddDays(jwtOptions.DurationInDays),
                signingCredentials:new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature)
                 
                 );

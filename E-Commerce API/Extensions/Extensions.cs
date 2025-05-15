@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Persistence;
 using Persistence.Identity;
 using Services;
+using Shared;
 using Shared.ErrorsModels;
 
 namespace E_Commerce_API.Extensions
@@ -24,7 +25,8 @@ namespace E_Commerce_API.Extensions
 
 
             services.AddInfrastructureServices(configuration);
-            services.AddApplicationServices();
+            services.AddApplicationServices(configuration);
+          
             return services;
         }
           

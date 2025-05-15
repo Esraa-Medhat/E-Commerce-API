@@ -8,11 +8,13 @@ using Domain.Contracts;
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Services.Abstractions;
+using Shared;
 
 namespace Services
 {
-    public class ServiceManager(IUnitOfWork unitOfWork,IMapper mapper,IBasketRepository basketRepository,ICacheRepository cacheRepository,UserManager<AppUser> userManager,IConfiguration configuration) : IServiceManager
+    public class ServiceManager(IUnitOfWork unitOfWork,IMapper mapper,IBasketRepository basketRepository,ICacheRepository cacheRepository,UserManager<AppUser> userManager,IOptions<JwtOptions> options) : IServiceManager
     {
         public IProductService ProductService { get; } = new ProductService(unitOfWork,mapper);
 
@@ -20,6 +22,6 @@ namespace Services
 
         public ICacheService CacheService { get; } = new CacheService(cacheRepository);
 
-        public IAuthService AuthService { get; }= new AuthService(userManager,configuration);
+        public IAuthService AuthService { get; }= new AuthService(userManager,options);
     }
 }
