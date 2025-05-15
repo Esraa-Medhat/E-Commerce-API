@@ -11,10 +11,11 @@ using Shared;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Configuration;
 
 namespace Services
 {
-    public class AuthService(UserManager<AppUser> userManager) : IAuthService
+    public class AuthService(UserManager<AppUser> userManager,IConfiguration configuration) : IAuthService
     {
         public async Task<UserResultDto> LoginAsync(LoginDto loginDto)
         {
@@ -68,12 +69,12 @@ namespace Services
                 authClaim.Add(new Claim(ClaimTypes.Role, role));
 
             }
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("StrongSecurityKeyForAuthenticationStrongSecurityKeyForAuthentication"));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:SecretKey"]));
             var token = new JwtSecurityToken(
-               issuer: "https://localhost:7108",
-               audience:"MyAudience",
+               issuer: configuration["JwtOptions:Issuer"],
+               audience: configuration["JwtOptions:Audience"],
                claims:authClaim,
-               expires:DateTime.UtcNow.AddDays(5),
+               expires:DateTime.UtcNow.AddDays(double.Parse(configuration["JwtOptions:DurationInDays"])),
                signingCredentials:new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature)
                 
                 );
