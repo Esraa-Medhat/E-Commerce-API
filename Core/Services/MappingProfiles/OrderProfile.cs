@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Domain.Entities.Order;
+using OrderAddress=Domain.Entities.Order.Address;
+using UserAddress=Domain.Entities.Identity.Address;
 using Shared.OrdersModels;
+using Domain.Entities.Order;
 
 namespace Services.MappingProfiles
 {
@@ -25,7 +27,8 @@ namespace Services.MappingProfiles
             .ForMember(d => d.ProductName, o => o.MapFrom(s => s.productInOrderItem.ProductName))
             .ForMember(d => d.PictureUrl, o => o.MapFrom(s => s.productInOrderItem.PictureUrl));
 
-            CreateMap<Address, AddressDto>().ReverseMap();
+            CreateMap<OrderAddress, AddressDto>().ReverseMap();
+            CreateMap<UserAddress, AddressDto>().ReverseMap();
                 
         }
 
