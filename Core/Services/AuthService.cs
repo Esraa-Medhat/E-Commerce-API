@@ -143,6 +143,7 @@ namespace Services
                 var addressResult = mapper.Map<Address>(address);
                 user.Address = addressResult;
             }
+           await userManager.UpdateAsync(user);
             return address;
         }
     }
