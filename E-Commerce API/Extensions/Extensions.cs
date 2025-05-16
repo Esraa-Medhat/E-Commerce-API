@@ -32,7 +32,18 @@ namespace E_Commerce_API.Extensions
             services.AddApplicationServices(configuration);
 
             services.configureJwtServices(configuration);
+            services.AddCors(config =>
 
+            config.AddPolicy("MyPolicy",options =>
+            {
+                options.AllowAnyHeader();
+                options.AllowAnyMethod();
+                //options.AllowAnyOrigin();
+                options.WithOrigins("http://localhost:5173/");
+            })
+
+
+            );
           
             return services;
         }
@@ -123,6 +134,7 @@ namespace E_Commerce_API.Extensions
                 app.UseSwaggerUI();
             }
             app.UseStaticFiles();
+            app.UseCors("MyPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
