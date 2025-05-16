@@ -4,12 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Shared;
+using Shared.OrdersModels;
 
 namespace Services.Abstractions
 {
     public interface IAuthService
     {
-       Task<UserResultDto> LoginAsync(LoginDto loginDto);
-       Task<UserResultDto> RegisterAsync(RegisterDto registerDto);
+        Task<UserResultDto> LoginAsync(LoginDto loginDto);
+        Task<UserResultDto> RegisterAsync(RegisterDto registerDto);
+        Task<bool> CheckEmailExistsAsync(string email);
+
+        Task<UserResultDto> GetCurrentUserAsync(string email);
+        Task<AddressDto> GetCurrentUserAddressAsync(string email);
+        Task<AddressDto> UpdateCurrentUserAddressAsync(AddressDto address,string email);
+
     }
 }
