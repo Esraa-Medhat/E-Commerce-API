@@ -1,0 +1,78 @@
+﻿using Domain.Exceptions;
+using Shared.ErrorsModels;
+
+namespace E_Commerce_API.Middlewares
+{
+    public class GlobalErrorHandlingMiddleware
+    {
+        private readonly RequestDelegate _next;
+        private readonly ILogger<GlobalErrorHandlingMiddleware> _logger;
+
+        public GlobalErrorHandlingMiddleware(RequestDelegate next,ILogger<GlobalErrorHandlingMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
+        public async Task InvokeAsync(HttpContext context)
+        {
+            await HandlingErrorAsync(context);
+        }
+
+        private async Task HandlingErrorAsync(HttpContext context)
+        {
+            try
+            {
+                await _next.Invoke(context);
+                if (context.Response.StatusCode == StatusCodes.Status404NotFound)
+                {
+                    await HandlingNotFoundEndPointAsync(context);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log Exception
+                _logger.LogError(ex, ex.Message);
+                //1-Set Status Code For Response
+                //2-Set Content Type Code For Response
+                //3-Response Object (Body)
+                //4-Return Response
+                //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                context.Response.ContentType = "application/json";
+                var response = new ErrorDetails()
+                {
+
+                    ErrorMessage = ex.Message
+                };
+                response.statusCode = ex switch
+                {
+                    NotFoundException => StatusCodes.Status404NotFound,
+                    BadRequestException => StatusCodes.Status400BadRequest,
+                    UnAuthorizedException => StatusCodes.Status401Unauthorized,
+                    ValidationException => HandlingValidationExceptionAsync((ValidationException)ex,response),
+                    _ => StatusCodes.Status500InternalServerError
+                };
+
+                context.Response.StatusCode = response.statusCode;
+
+                await context.Response.WriteAsJsonAsync(response);
+            }
+        }
+
+        private static async Task HandlingNotFoundEndPointAsync(HttpContext context)
+        {
+            context.Response.ContentType = "application/json";
+            var response = new ErrorDetails()
+            {
+                statusCode = StatusCodes.Status404NotFound,
+                ErrorMessage = $"End Point {context.Request.Path} is Not Found"
+            };
+            await context.Response.WriteAsJsonAsync(response);
+        }
+        private static int  HandlingValidationExceptionAsync(ValidationException ex,ErrorDetails response)
+        {
+            response.Errors = ex.Errors;
+            return StatusCodes.Status400BadRequest;
+        }
+
+    }
+}

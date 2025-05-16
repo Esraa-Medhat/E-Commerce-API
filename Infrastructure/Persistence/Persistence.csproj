@@ -7,14 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Folder Include="Identity\Migrations\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Domain\Domain.csproj" />
-    <ProjectReference Include="..\..\Core\Services.Abstractions\Services.Abstractions.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.15" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.37" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Services\Services.csproj" />
   </ItemGroup>
 
 </Project>
